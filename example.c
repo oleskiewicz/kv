@@ -1,11 +1,11 @@
 #include <stdio.h>
 
-#define KV                           \
+#define KV \
 	X(char *, out, "%s", atos, "./") \
 	X(double, Om, "%.3f", atof, 0.0) \
 	X(double, Ol, "%.3f", atof, 0.0) \
-	X(int, nout, "%d", atoi, 1)      \
-	X(bool, flat, "%d", atob, true)  \
+	X(int, nout, "%d", atoi, 1) \
+	X(bool, flat, "%d", atob, true) \
 
 #include "kv.h"
 
