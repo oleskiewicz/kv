@@ -1,0 +1,35 @@
+kv
+==
+
+kv is a simple, header-only key-value config reader for C.  It is implemented
+using X Macros.
+
+
+format
+------
+
+Configuration file is read from standard input, one line per field of the
+key-value struct.  Each line is expected to follow `%s = %s\n` format.
+Conversions are provided for integers, double precision floats, booleans
+(formatted as: `T`, `True` or `true`), characters and strings.  Maximum length
+of keys and values is chosen arbitrarily to be 256.
+
+	# comments can be removed with sed
+	key1 = 1   # int
+	key2 = 1.0 # double
+	key3 = T   # bool
+	key4 = O   # char
+	key5 = /   # char *
+
+
+usage
+-----
+
+Included are `example.c` and `example.conf` files, with Planck+15
+cosmology data.
+
+	make
+	sed 's/#.*//' ./example.conf | ./example
+
+Notice that `kv.h` header file must be included *after* defining a
+`KV` macro.
