@@ -70,13 +70,13 @@ kv_print(kv c) {
 }
 
 void
-kv_read(kv *c) {
+kv_read(FILE *f, kv *c) {
 	char k[MAXLEN], v[MAXLEN];
 
 #define X(type, name, format, parse, init) \
 	if(strcmp(k, #name) == 0) \
 		c->name = parse(v);
-	while(scanf("%s = %s\n", k, v) == 2) {
+	while(fscanf(f, "%s = %s\n", k, v) == 2) {
 		KV
 	}
 #undef X
