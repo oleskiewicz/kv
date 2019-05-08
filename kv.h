@@ -7,25 +7,9 @@
 
 bool
 atob(const char *str) {
-	if(strcmp(str, "true") == 0) {
+	if((str[0] == 'T') || (str[0] == 't')) {
 		return true;
-	} else if(strcmp(str, "True") == 0) {
-		return true;
-	} else if(strcmp(str, ".true.") == 0) {
-		return true;
-	} else if(strcmp(str, "T") == 0) {
-		return true;
-	} else if(strcmp(str, "t") == 0) {
-		return true;
-	} else if(strcmp(str, "false") == 0) {
-		return false;
-	} else if(strcmp(str, "False") == 0) {
-		return false;
-	} else if(strcmp(str, ".false.") == 0) {
-		return false;
-	} else if(strcmp(str, "F") == 0) {
-		return false;
-	} else if(strcmp(str, "f") == 0) {
+	} else if((str[0] == 'F') || (str[0] == 'f')) {
 		return false;
 	} else {
 		fprintf(stderr, "boolean must be true or false, got \"%s\"\n", str);
