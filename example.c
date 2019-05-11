@@ -1,11 +1,11 @@
 #include <stdio.h>
 
 #define KV \
-	X(char *, out, "%s", atos, "./") \
-	X(double, Om, "%.3f", atof, 0.0) \
-	X(double, Ol, "%.3f", atof, 0.0) \
-	X(int, nout, "%d", atoi, 1) \
-	X(bool, flat, "%d", atob, true) \
+	X(char *, out, strdup, "%s", ".") \
+	X(double, Om, atof, "%f", 0.0) \
+	X(double, Ol, atof, "%f", 0.0) \
+	X(int, nout, atoi, "%d", 1) \
+	X(bool, flat, atob, "%d", true)
 
 #include "kv.h"
 
@@ -22,6 +22,7 @@ main(int argc, char *argv[]) {
 		kv_read(stdin, &c);
 	}
 
-	kv_print(c);
+	kv_print(stdout, c);
+
 	return 0;
 }

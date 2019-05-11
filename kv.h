@@ -4,6 +4,7 @@
 #include <string.h>
 
 #define MAXLEN 256
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 bool
 atob(const char *str) {
@@ -22,23 +23,17 @@ atoc(char *str) {
 	return strlen(str) > 0 ? str[0] : '\0';
 }
 
-char *
-atos(char *str) {
-	char *res = (char *)malloc(sizeof(char) * strlen(str) + 1);
-	strncpy(res, str, strlen(str) + 1);
-	return res;
-}
-
+#define X(type, name, parse, format, init) \
+	type name;
 typedef struct {
-#define X(type, name, format, parse, init) type name;
 	KV
-#undef X
 } kv;
+#undef X
 
 kv
 kv_init() {
 	kv c;
-#define X(type, name, format, parse, init) \
+#define X(type, name, parse, format, init) \
 	c.name = init;
 	KV
 #undef X
@@ -46,9 +41,9 @@ kv_init() {
 }
 
 void
-kv_print(kv c) {
-#define X(type, name, format, parse, init) \
-	printf("%s = "format"\n", #name, c.name);
+kv_print(FILE *f, kv c) {
+#define X(type, name, parse, format, init) \
+	fprintf(f, "%s = "format"\n", #name, c.name);
 	KV
 #undef X
 }
@@ -56,9 +51,8 @@ kv_print(kv c) {
 void
 kv_read(FILE *f, kv *c) {
 	char k[MAXLEN], v[MAXLEN];
-
-#define X(type, name, format, parse, init) \
-	if(strcmp(k, #name) == 0) \
+#define X(type, name, parse, format, init) \
+	if(strncmp(k, #name, MAX(strlen(k), strlen(#name))) == 0) \
 		c->name = parse(v);
 	while(fscanf(f, "%s = %s\n", k, v) == 2) {
 		KV
