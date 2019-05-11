@@ -1,0 +1,46 @@
+.Dd $Mdocdate: 2019-05-09$
+.Dt KV 5
+.Sh NAME
+.Nm kv ,
+.Nd key-value configuration file format
+.Sh DESCRIPTION
+One line per field of the key-value struct.
+Each line is expected to follow
+.Ql Qq %s = %s
+format.
+Conversions are provided by system libraries for integers
+.Pq Fn atoi ,
+double precision floats
+.Pq Fn atof ,
+and strings
+.Pq Fn strdup ,
+and by the
+.Nm kv
+library for booleans
+.Pq Fn atob .
+Maximum length of strings holding keys and values is chosen arbitrarily to be 256.
+Empty lines are silently ignored.
+.Sh EXAMPLE
+.Bd -literal -offset -indent
+# planck15 cosmology
+out  = /data/planck15
+Om   = 0.3089
+Ol   = 0.6911
+Ob   = 0.04859756
+H0   = 0.6774
+T0   = 2.728
+flat = T # no curvature
+
+# number of outputs
+nout = 3
+.Ed
+.Pp
+The comments may start with any character
+.Pq here Dq #
+and can be removed with:
+.Ql sed 's/#.*//'
+.Sh SEE ALSO
+.Xr kv 3 ,
+.Xr sed 1
+.Sh AUTHORS
+.An Piotr Oleskiewicz Aq Mt piotr@oleskiewi.cz

@@ -1,0 +1,63 @@
+.Dd $Mdocdate: 2019-05-09$
+.Dt KV 3
+.Sh NAME
+.Nm kv_init ,
+.Nm kv_print ,
+.Nm kv_read
+.Nd key-value runtime configuration utilities
+.Sh SYNOPSIS
+.In kv.h
+.Dv typedef struct kv;
+.Ft kv
+.Fn kv_init
+.Ft void
+.Fn kv_read "FILE *f" "kv *c"
+.Ft void
+.Fn kv_print "FILE *f" "kv c"
+.Sh DESCRIPTION
+The
+.Fn kv_init
+function initialises and returns a struct config of type
+.Vt kv .
+.Pp
+The
+.Fn kv_read
+function parses the contents of the stream
+.Fa f ,
+and updates the default values of the struct
+.Fa c .
+.Pp
+The
+.Fn kv_print
+function prints the contents of the struct
+.Fa c
+to the stream
+.Fa f .
+.Sh USAGE
+.Bd -literal -offset -indent
+#include <stdio.h>
+
+#define KV \\
+	X(int, i, atoi, "%d", 1) \\
+	X(double, x, atof, "%f", 0.0) \\
+	X(char *, out, strdup, "%s", "default")
+#include <kv.h>
+
+int
+main(int argc, char *argv[]) {
+	kv c = kv_init();
+	kv_read(stdin, &c);
+	kv_print(stdout, c);
+	return 0;
+}
+.Ed
+.Pp
+Notice that the library must be included after the KV definition.
+.Sh BUGS
+Lines not matching the format may cause values to be incorrectly overwritten.
+No effort has been made for safety checks on string / stream lengths.
+Arrays are not supported (yet).
+.Sh SEE ALSO
+.Xr kv 5
+.Sh AUTHORS
+.An Piotr Oleskiewicz Aq Mt piotr@oleskiewi.cz
