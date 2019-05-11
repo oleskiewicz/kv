@@ -17,8 +17,7 @@ main(int argc, char *argv[]) {
 		FILE *f = fopen(argv[1], "r");
 		kv_read(f, &c);
 		fclose(f);
-	}
-	else {
+	} else {
 		kv_read(stdin, &c);
 	}
 
