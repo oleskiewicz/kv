@@ -23,6 +23,34 @@ atoc(char *str) {
 	return strlen(str) > 0 ? str[0] : '\0';
 }
 
+int *
+atoai(char *str) {
+	int i = 0;
+	int *a = NULL;
+	char *e = strtok(str, ",");
+	while (e != NULL) {
+		a = (int *)realloc(a, sizeof *a);
+		a[i] = atoi(e);
+		i += 1;
+		e = strtok(NULL, ",");
+	}
+	return a;
+}
+
+double *
+atoaf(char *str) {
+	int i = 0;
+	double *a = NULL;
+	char *e = strtok(str, ",");
+	while (e != NULL) {
+		a = (double *)realloc(a, sizeof *a);
+		a[i] = atof(e);
+		i += 1;
+		e = strtok(NULL, ",");
+	}
+	return a;
+}
+
 #define X(type, name, init) \
 	type name;
 struct kv {
@@ -47,7 +75,8 @@ kv_print(FILE *f, struct kv c) {
 		char *: "%s = %s\n", \
 		double: "%s = %f\n", \
 		int: "%s = %d\n", \
-		bool: "%s = %d\n" \
+		bool: "%s = %d\n", \
+		default: "%s = NA\n" \
 		), #name, c.name);
 	KV
 #undef X
@@ -57,13 +86,14 @@ void
 kv_read(FILE *f, struct kv *c) {
 	char k[MAXLEN], v[MAXLEN];
 #define X(type, name, init) \
-	if(strncmp(k, #name, MAX(strlen(k), strlen(#name))) == 0) \
+	if (strncmp(k, #name, MAX(strlen(k), strlen(#name))) == 0) \
 		c->name = _Generic((type){0}, \
-			char *: strdup, \
-			double: atof, \
+			bool: atob, \
 			int: atoi, \
-			bool: atob \
-			)(v);
+			int *: atoai, \
+			double: atof, \
+			char *: strdup \
+		)(v);
 	while(fscanf(f, "%s = %s\n", k, v) == 2) {
 		KV
 	}

@@ -4,8 +4,9 @@
 	X(char *, out, ".") \
 	X(double, Om, 0.0) \
 	X(double, Ol, 0.0) \
+	X(bool, flat, true) \
 	X(int, nout, 1) \
-	X(bool, flat, true)
+	X(int *, zout, NULL) \
 
 #include "kv.h"
 
@@ -22,6 +23,10 @@ main(int argc, char *argv[]) {
 	}
 
 	kv_print(stdout, c);
+
+	for(int i = 0; i < c.nout; i++)
+		printf("%d ", c.zout[i]);
+	printf("\n");
 
 	return 0;
 }

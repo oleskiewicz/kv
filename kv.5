@@ -17,7 +17,11 @@ and strings
 and by the
 .Nm kv
 library for booleans
-.Pq Fn atob .
+.Pq Fn atob ,
+integer arrays
+.Pq Fn atoai ,
+and double precision float arrays
+.Pq Fn atoaf .
 Maximum length of strings holding keys and values is chosen arbitrarily to be 256.
 Empty lines are silently ignored.
 .Sh EXAMPLE
@@ -33,6 +37,7 @@ flat = T # no curvature
 
 # number of outputs
 nout = 3
+zout = 0,1,2
 .Ed
 .Pp
 The comments may start with any character
