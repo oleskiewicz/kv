@@ -1,5 +1,5 @@
 CC     = cc
-CFLAGS = -std=c99 -Wall -O2 -march=native
+CFLAGS = -std=c11 -Wall -O2 -march=native
 PREFIX = /usr/local
 
 all: example
