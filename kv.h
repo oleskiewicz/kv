@@ -23,7 +23,7 @@ atoc(char *str) {
 	return strlen(str) > 0 ? str[0] : '\0';
 }
 
-#define X(type, name, parse, format, init) \
+#define X(type, name, init) \
 	type name;
 typedef struct {
 	KV
@@ -33,7 +33,7 @@ typedef struct {
 kv
 kv_init() {
 	kv c;
-#define X(type, name, parse, format, init) \
+#define X(type, name, init) \
 	c.name = init;
 	KV
 #undef X
@@ -42,8 +42,13 @@ kv_init() {
 
 void
 kv_print(FILE *f, kv c) {
-#define X(type, name, parse, format, init) \
-	fprintf(f, "%s = "format"\n", #name, c.name);
+#define X(type, name, init) \
+	fprintf(f, _Generic((type){0}, \
+		char *: "%s = %s\n", \
+		double: "%s = %f\n", \
+		int: "%s = %d\n", \
+		bool: "%s = %d\n" \
+		), #name, c.name);
 	KV
 #undef X
 }
@@ -51,9 +56,14 @@ kv_print(FILE *f, kv c) {
 void
 kv_read(FILE *f, kv *c) {
 	char k[MAXLEN], v[MAXLEN];
-#define X(type, name, parse, format, init) \
+#define X(type, name, init) \
 	if(strncmp(k, #name, MAX(strlen(k), strlen(#name))) == 0) \
-		c->name = parse(v);
+		c->name = _Generic((type){0}, \
+			char *: strdup, \
+			double: atof, \
+			int: atoi, \
+			bool: atob \
+			)(v);
 	while(fscanf(f, "%s = %s\n", k, v) == 2) {
 		KV
 	}
