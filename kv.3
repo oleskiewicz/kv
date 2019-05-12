@@ -38,9 +38,9 @@ to the stream
 #include <stdio.h>
 
 #define KV \\
-	X(int, i, atoi, "%d", 1) \\
-	X(double, x, atof, "%f", 0.0) \\
-	X(char *, out, strdup, "%s", "default")
+	X(int, i, 1) \\
+	X(double, x, 0.0) \\
+	X(char *, out, "default")
 #include <kv.h>
 
 int
