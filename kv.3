@@ -45,7 +45,7 @@ to the stream
 
 int
 main(int argc, char *argv[]) {
-	kv c = kv_init();
+	struct kv c = kv_init();
 	kv_read(stdin, &c);
 	kv_print(stdout, c);
 	return 0;

@@ -11,7 +11,7 @@
 
 int
 main(int argc, char *argv[]) {
-	kv c = kv_init();
+	struct kv c = kv_init();
 
 	if(argc > 1) {
 		FILE *f = fopen(argv[1], "r");

@@ -25,14 +25,14 @@ atoc(char *str) {
 
 #define X(type, name, init) \
 	type name;
-typedef struct {
+struct kv {
 	KV
-} kv;
+};
 #undef X
 
-kv
+struct kv
 kv_init() {
-	kv c;
+	struct kv c;
 #define X(type, name, init) \
 	c.name = init;
 	KV
@@ -41,7 +41,7 @@ kv_init() {
 }
 
 void
-kv_print(FILE *f, kv c) {
+kv_print(FILE *f, struct kv c) {
 #define X(type, name, init) \
 	fprintf(f, _Generic((type){0}, \
 		char *: "%s = %s\n", \
@@ -54,7 +54,7 @@ kv_print(FILE *f, kv c) {
 }
 
 void
-kv_read(FILE *f, kv *c) {
+kv_read(FILE *f, struct kv *c) {
 	char k[MAXLEN], v[MAXLEN];
 #define X(type, name, init) \
 	if(strncmp(k, #name, MAX(strlen(k), strlen(#name))) == 0) \
