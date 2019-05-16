@@ -2,9 +2,29 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <string.h>
+#include <ctype.h>
 
 #define MAXLEN 256
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+char *
+strtrim(char *str) {
+	char *end;
+
+	while(isspace((int)*str))
+		str++;
+
+	if(*str == 0)
+		return str;
+
+	end = str + strlen(str) - 1;
+	while(end > str && isspace((int)*end))
+		end--;
+
+	end[1] = '\0';
+
+	return str;
+}
 
 bool
 atob(const char *str) {
@@ -25,10 +45,10 @@ atoc(char *str) {
 
 int *
 atoai(char *str) {
-	int i = 0;
+	size_t i = 0;
 	int *a = NULL;
 	char *e = strtok(str, ",");
-	while (e != NULL) {
+	while(e != NULL) {
 		a = (int *)realloc(a, sizeof *a);
 		a[i] = atoi(e);
 		i += 1;
@@ -42,7 +62,7 @@ atoaf(char *str) {
 	int i = 0;
 	double *a = NULL;
 	char *e = strtok(str, ",");
-	while (e != NULL) {
+	while(e != NULL) {
 		a = (double *)realloc(a, sizeof *a);
 		a[i] = atof(e);
 		i += 1;
@@ -69,32 +89,48 @@ kv_init() {
 }
 
 void
-kv_print(FILE *f, struct kv c) {
+kv_print(FILE * f, struct kv c) {
 #define X(type, name, init) \
-	fprintf(f, _Generic((type){0}, \
-		char *: "%s = %s\n", \
-		double: "%s = %f\n", \
-		int: "%s = %d\n", \
-		bool: "%s = %d\n", \
-		default: "%s = NA\n" \
-		), #name, c.name);
+	fprintf(\
+		f, \
+		_Generic((type){0}, \
+			bool: "%s = %d\n", \
+			int: "%s = %d\n", \
+			int *: "%s = %s\n", \
+			double: "%s = %f\n", \
+			double *: "%s = %s\n", \
+			char: "%s = %c\n", \
+			char *: "%s = %s\n" \
+		), \
+		#name, \
+		_Generic((type){0}, \
+			int *:  "array of ints", \
+			double *: "array of floats", \
+			default: c.name \
+		) \
+	);
 	KV
 #undef X
 }
 
 void
-kv_read(FILE *f, struct kv *c) {
-	char k[MAXLEN], v[MAXLEN];
+kv_read(FILE * f, struct kv *c) {
+	char *_k = (char *)malloc(MAXLEN * sizeof(char));
+	char *_v = (char *)malloc(MAXLEN * sizeof(char));
+
 #define X(type, name, init) \
-	if (strncmp(k, #name, MAX(strlen(k), strlen(#name))) == 0) \
+	if (!strncmp(k, #name, MAX(strlen(k), strlen(#name)))) \
 		c->name = _Generic((type){0}, \
 			bool: atob, \
 			int: atoi, \
 			int *: atoai, \
 			double: atof, \
+			double *: atoaf, \
+			char: atoc, \
 			char *: strdup \
 		)(v);
-	while(fscanf(f, "%s = %s\n", k, v) == 2) {
+	while(fscanf(f, "%[^=]=%[^=\n]", _k, _v) == 2) {
+		char *k = strtrim(_k), *v = strtrim(_v);
 		KV
 	}
 #undef X
