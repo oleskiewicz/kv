@@ -4,6 +4,7 @@
 	X(char *, out, ".") \
 	X(double, Om, 0.0) \
 	X(double, Ol, 0.0) \
+	X(double, Ob, 0.0) \
 	X(bool, flat, true) \
 	X(int, nout, 1) \
 	X(int *, zout, NULL) \

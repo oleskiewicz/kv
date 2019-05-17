@@ -97,7 +97,7 @@ kv_print(FILE * f, struct kv c) {
 			bool: "%s = %d\n", \
 			int: "%s = %d\n", \
 			int *: "%s = %s\n", \
-			double: "%s = %f\n", \
+			double: "%s = %g\n", \
 			double *: "%s = %s\n", \
 			char: "%s = %c\n", \
 			char *: "%s = %s\n" \
