@@ -8,22 +8,21 @@
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
 char *
-strtrim(char *str) {
+strtrim(char *in) {
+	char *out = strndup(in, strnlen(in, MAXLEN));
 	char *end;
+	while(isspace((int)*out))
+		out++;
 
-	while(isspace((int)*str))
-		str++;
+	if(*out == 0)
+		return out;
 
-	if(*str == 0)
-		return str;
-
-	end = str + strlen(str) - 1;
-	while(end > str && isspace((int)*end))
+	end = out + strnlen(out, MAXLEN) - 1;
+	while(end > out && isspace((int)*end))
 		end--;
 
 	end[1] = '\0';
-
-	return str;
+	return out;
 }
 
 bool
@@ -40,33 +39,31 @@ atob(const char *str) {
 
 char
 atoc(char *str) {
-	return strlen(str) > 0 ? str[0] : '\0';
+	return strnlen(str, MAXLEN) > 0 ? str[0] : '\0';
 }
 
 int *
 atoai(char *str) {
 	size_t i = 0;
-	int *a = NULL;
-	char *e = strtok(str, ",");
-	while(e != NULL) {
-		a = (int *)realloc(a, sizeof *a);
-		a[i] = atoi(e);
+	int *a = (int *)calloc(MAXLEN, sizeof(int));
+	char *token = strtok(strndup(str, strnlen(str, MAXLEN)), ",");
+	while(token != NULL) {
+		a[i] = atoi(token);
 		i += 1;
-		e = strtok(NULL, ",");
+		token = strtok(NULL, ",");
 	}
 	return a;
 }
 
 double *
 atoaf(char *str) {
-	int i = 0;
-	double *a = NULL;
-	char *e = strtok(str, ",");
-	while(e != NULL) {
-		a = (double *)realloc(a, sizeof *a);
-		a[i] = atof(e);
+	size_t i = 0;
+	double *a = (double *)calloc(MAXLEN, sizeof(double));
+	char *token = strtok(strndup(str, strnlen(str, MAXLEN)), ",");
+	while(token != NULL) {
+		a[i] = atof(token);
 		i += 1;
-		e = strtok(NULL, ",");
+		token = strtok(NULL, ",");
 	}
 	return a;
 }
@@ -91,7 +88,7 @@ kv_init() {
 void
 kv_print(FILE * f, struct kv c) {
 #define X(type, name, init) \
-	fprintf(\
+	fprintf( \
 		f, \
 		_Generic((type){0}, \
 			bool: "%s = %d\n", \
@@ -119,7 +116,7 @@ kv_read(FILE * f, struct kv *c) {
 	char *_v = (char *)malloc(MAXLEN * sizeof(char));
 
 #define X(type, name, init) \
-	if (!strncmp(k, #name, MAX(strlen(k), strlen(#name)))) \
+	if (!strncmp(k, #name, MAX(strnlen(k, MAXLEN), strnlen(#name, MAXLEN)))) \
 		c->name = _Generic((type){0}, \
 			bool: atob, \
 			int: atoi, \
