@@ -27,12 +27,20 @@ strtrim(char *in) {
 
 bool
 atob(const char *str) {
-	if((str[0] == 'T') || (str[0] == 't')) {
-		return true;
-	} else if((str[0] == 'F') || (str[0] == 'f')) {
-		return false;
-	} else {
-		fprintf(stderr, "boolean must be true or false, got \"%s\"\n", str);
+	if (strnlen(str, MAXLEN) > 0) {
+		if((str[0] == 'T') || (str[0] == 't')) {
+			return true;
+		}
+		else if((str[0] == 'F') || (str[0] == 'f')) {
+			return false;
+		}
+		else {
+			fprintf(stderr, "boolean must be true or false, got \"%s\"\n", str);
+			exit(1);
+		}
+	}
+	else {
+		fprintf(stderr, "boolean must be non-empty");
 		exit(1);
 	}
 }
@@ -45,9 +53,10 @@ atoc(char *str) {
 int *
 atoai(char *str) {
 	size_t i = 0;
-	int *a = (int *)calloc(MAXLEN, sizeof(int));
+	int *a = NULL;
 	char *token = strtok(strndup(str, strnlen(str, MAXLEN)), ",");
 	while(token != NULL) {
+		a = (int *)realloc(a, i * sizeof(int));
 		a[i] = atoi(token);
 		i += 1;
 		token = strtok(NULL, ",");
@@ -58,9 +67,10 @@ atoai(char *str) {
 double *
 atoaf(char *str) {
 	size_t i = 0;
-	double *a = (double *)calloc(MAXLEN, sizeof(double));
+	double *a = NULL;
 	char *token = strtok(strndup(str, strnlen(str, MAXLEN)), ",");
 	while(token != NULL) {
+		a = (double *)realloc(a, i * sizeof(double));
 		a[i] = atof(token);
 		i += 1;
 		token = strtok(NULL, ",");
@@ -112,9 +122,10 @@ kv_print(FILE * f, struct kv c) {
 
 void
 kv_read(FILE * f, struct kv *c) {
-	char *_k = (char *)malloc(MAXLEN * sizeof(char));
-	char *_v = (char *)malloc(MAXLEN * sizeof(char));
-
+	char *_k = (char *)calloc(MAXLEN, sizeof(char)),
+	     *_v = (char *)calloc(MAXLEN, sizeof(char)),
+	     *k,
+	     *v;
 #define X(type, name, init) \
 	if (!strncmp(k, #name, MAX(strnlen(k, MAXLEN), strnlen(#name, MAXLEN)))) \
 		c->name = _Generic((type){0}, \
@@ -127,8 +138,9 @@ kv_read(FILE * f, struct kv *c) {
 			char *: strdup \
 		)(v);
 	while(fscanf(f, "%[^=]=%[^=\n]", _k, _v) == 2) {
-		char *k = strtrim(_k), *v = strtrim(_v);
+		k = strtrim(_k), v = strtrim(_v);
 		KV
 	}
+	free(_k), free(_v);
 #undef X
 }
