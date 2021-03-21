@@ -1,4 +1,8 @@
+#include <ctype.h>
+#include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #define KV \
 	X(char *, out, ".") \
@@ -13,9 +17,9 @@
 
 int
 main(int argc, char *argv[]) {
-	struct kv c = kv_init();
+	kv c = kv_init();
 
-	if(argc > 1) {
+	if (argc > 1) {
 		FILE *f = fopen(argv[1], "r");
 		kv_read(f, &c);
 		fclose(f);

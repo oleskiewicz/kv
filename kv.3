@@ -57,7 +57,9 @@ Notice that the library must be included after the KV definition.
 Lines not matching the format may cause values to be incorrectly overwritten.
 No effort has been made for safety checks on string / stream lengths.
 Array printing is not supported (yet).
+Array parsing uses
+.Xr strtok 3 .
 .Sh SEE ALSO
 .Xr kv 5
 .Sh AUTHORS
-.An Piotr Oleskiewicz Aq Mt piotr@oleskiewi.cz
+.An Piotr Oleskiewicz

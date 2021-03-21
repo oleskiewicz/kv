@@ -1,35 +1,35 @@
 kv
 ==
 
-kv is a simple, header-only key-value config reader for C.  It is implemented
-using X Macros.
+kv is a simple, header-only key-value config reader for C.  It is implemented using X
+Macros.  The advantage of this approach is that it generates code for parsing, printing,
+and serialising the configuration files all at once.
 
 
 format
 ------
 
-Configuration file is read from standard input, one line per field of the
-key-value struct.  Each line is expected to follow `%s = %s\n` format.
-Conversions are provided for integers, double precision floats, booleans
-(formatted as: `T`, `True` or `true`), characters and strings.  Maximum length
-of keys and values is chosen arbitrarily to be 256.
+Configuration file is read from standard input, one line per field of the key-value
+struct.  Each line is expected to follow `%s = %s\n` format.  Conversions are provided
+for integers, double precision floats, booleans (formatted as: `T`, `True` or `true`),
+characters and strings.  Empty keys and lines are silently discarded.  Maximum length of
+keys and values is BUFSIZ.
 
 	# comments can be removed with sed
-	key1 = 1   # int
-	key2 = 1.0 # double
-	key3 = T   # bool
-	key4 = O   # char
-	key5 = /   # char *
+	key1 = 1       # int
+	key2 = 1.0     # double
+	key3 = T       # bool
+	key4 = O       # char
+	key5 = /       # char *
+	key6 = 1,2,3   # int *
 
 
 usage
 -----
 
-Included are `example.c` and `example.conf` files, with Planck+15
-cosmology data.
+See included `example.c` and `example.conf` files, with Planck+15 cosmology data.
 
 	make
-	sed 's/#.*//' ./example.conf | ./example
+	< example.conf sed 's/#.*//' | ./example
 
-Notice that `kv.h` header file must be included *after* defining a
-`KV` macro.
+Notice that `kv.h` header file must be included **after** defining a `KV` macro.

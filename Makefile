@@ -1,8 +1,8 @@
 CC     = cc
-CFLAGS = -std=c11 -Wall -O2 -march=native
+CFLAGS = -std=c11 -Wall
 PREFIX = /usr/local
 
-all: example
+example: example.c kv.h
 
 install:
 	install kv.h $(DESTDIR)$(PREFIX)/include
@@ -13,8 +13,6 @@ uninstall:
 	rm -f $(DESTDIR)$(PREFIX)/include/kv.h \
 		$(DESTDIR)$(PREFIX)/share/man/man3/kv.3.gz \
 		$(DESTDIR)$(PREFIX)/share/man/man5/kv.5.gz
-
-example: example.c kv.h
 
 %: %.c
 	$(CC) $(CFLAGS) -o $@ $< $(LDFLAGS)

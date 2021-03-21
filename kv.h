@@ -1,37 +1,32 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
-#include <ctype.h>
-
-#define MAXLEN 256
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define SEP " ,;"
 
-char *
+static inline char *
 strtrim(char *in) {
-	char *out = strndup(in, strnlen(in, MAXLEN));
+	char *out = strndup(in, strnlen(in, BUFSIZ));
 	char *end;
-	while(isspace((int)*out))
+
+	while (isspace((int)*out))
 		out++;
 
-	if(*out == 0)
+	if (*out == 0)
 		return out;
 
-	end = out + strnlen(out, MAXLEN) - 1;
-	while(end > out && isspace((int)*end))
+	end = out + strnlen(out, BUFSIZ) - 1;
+	while (end > out && isspace((int)*end))
 		end--;
 
 	end[1] = '\0';
 	return out;
 }
 
-bool
+static inline bool
 atob(const char *str) {
-	if (strnlen(str, MAXLEN) > 0) {
-		if((str[0] == 'T') || (str[0] == 't')) {
+	if (strnlen(str, BUFSIZ) > 0) {
+		if ((str[0] == 'T') || (str[0] == 't')) {
 			return true;
 		}
-		else if((str[0] == 'F') || (str[0] == 'f')) {
+		else if ((str[0] == 'F') || (str[0] == 'f')) {
 			return false;
 		}
 		else {
@@ -45,49 +40,47 @@ atob(const char *str) {
 	}
 }
 
-char
+static inline char
 atoc(char *str) {
-	return strnlen(str, MAXLEN) > 0 ? str[0] : '\0';
+	return strnlen(str, BUFSIZ) > 0 ? str[0] : '\0';
 }
 
-int *
+static inline int *
 atoai(char *str) {
-	size_t i = 0;
 	int *a = NULL;
-	char *token = strtok(strndup(str, strnlen(str, MAXLEN)), ",");
-	while(token != NULL) {
-		a = (int *)realloc(a, i * sizeof(int));
-		a[i] = atoi(token);
-		i += 1;
-		token = strtok(NULL, ",");
-	}
+	int i = 0;
+	char *tok = strtok(str, SEP);
+	do {
+		a = realloc(a, i * sizeof(int));
+		a[i] = atoi(tok);
+		i++;
+	} while ((tok = strtok(NULL, SEP)));
 	return a;
 }
 
-double *
+static inline double *
 atoaf(char *str) {
-	size_t i = 0;
 	double *a = NULL;
-	char *token = strtok(strndup(str, strnlen(str, MAXLEN)), ",");
-	while(token != NULL) {
-		a = (double *)realloc(a, i * sizeof(double));
-		a[i] = atof(token);
-		i += 1;
-		token = strtok(NULL, ",");
-	}
+	int i = 0;
+	char *tok = strtok(str, SEP);
+	do {
+		a = realloc(a, i * sizeof(int));
+		a[i] = atof(tok);
+		i++;
+	} while ((tok = strtok(NULL, SEP)));
 	return a;
 }
 
 #define X(type, name, init) \
 	type name;
-struct kv {
+typedef struct {
 	KV
-};
+} kv;
 #undef X
 
-struct kv
+kv
 kv_init() {
-	struct kv c;
+	kv c;
 #define X(type, name, init) \
 	c.name = init;
 	KV
@@ -96,7 +89,7 @@ kv_init() {
 }
 
 void
-kv_print(FILE * f, struct kv c) {
+kv_print(FILE * f, kv c) {
 #define X(type, name, init) \
 	fprintf( \
 		f, \
@@ -121,13 +114,11 @@ kv_print(FILE * f, struct kv c) {
 }
 
 void
-kv_read(FILE * f, struct kv *c) {
-	char *_k = (char *)calloc(MAXLEN, sizeof(char)),
-	     *_v = (char *)calloc(MAXLEN, sizeof(char)),
-	     *k,
-	     *v;
+kv_read(FILE * f, kv *c) {
+	char *_k = calloc(BUFSIZ, 1);
+	char *_v = calloc(BUFSIZ, 1);
 #define X(type, name, init) \
-	if (!strncmp(k, #name, MAX(strnlen(k, MAXLEN), strnlen(#name, MAXLEN)))) \
+	if (!strncmp(k, #name, MAX(strnlen(k, BUFSIZ), strnlen(#name, BUFSIZ)))) \
 		c->name = _Generic((type){0}, \
 			bool: atob, \
 			int: atoi, \
@@ -137,8 +128,8 @@ kv_read(FILE * f, struct kv *c) {
 			char: atoc, \
 			char *: strdup \
 		)(v);
-	while(fscanf(f, "%[^=]=%[^=\n]", _k, _v) == 2) {
-		k = strtrim(_k), v = strtrim(_v);
+	while (fscanf(f, "%256[^=]=%256[^=\n]", _k, _v) == 2) {
+		char *k = strtrim(_k), *v = strtrim(_v);
 		KV
 	}
 	free(_k), free(_v);
